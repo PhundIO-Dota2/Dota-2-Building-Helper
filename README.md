@@ -1,3 +1,7 @@
+# [Please click here for a better version of Building Helper](https://github.com/snipplets/Dota-2-Building-Helper)
+
+---------------
+
 # Dota 2 Building Helper v2.0
 
 I'm pleased to announce that BuildingHelper has been completely revamped. It now includes RTS-style building ghost, and the library is overall more customizeable and simpler.
