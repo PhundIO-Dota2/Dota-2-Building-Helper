@@ -1,5 +1,7 @@
 # [Please click here for a better version of Building Helper](https://github.com/snipplets/Dota-2-Building-Helper)
 
+[![Join the chat at https://gitter.im/Myll/Dota-2-Building-Helper](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Myll/Dota-2-Building-Helper?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ---------------
 
 # Dota 2 Building Helper v2.0
