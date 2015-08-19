@@ -1,50 +1,43 @@
-# [Please click here for a better version of Building Helper](https://github.com/snipplets/Dota-2-Building-Helper)
+# Dota 2 Building Helper - Reborn
 
----------------
-
-[![Join the chat at https://gitter.im/Myll/Dota-2-Building-Helper](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Myll/Dota-2-Building-Helper?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-# Dota 2 Building Helper v2.0
-
-I'm pleased to announce that BuildingHelper has been completely revamped. It now includes RTS-style building ghost, and the library is overall more customizeable and simpler.
-
-[Gfy Demo](http://gfycat.com/SpecificSkeletalCowbird)
+## Contents
 
 ## Installation
 
-Since BuildingHelper (BH) now has various components in many different locations, I thought the best way to convey the installation information would be to make this repo contain a sample RTS-style addon. You can literally just merge these game and content folders into your `dota 2 beta/dota_ugc` folder, compile the map in Hammer, and you can see BH in action. I will of course still explain essential installation info in this section.
+There are 2 ways to use this library, starting by [downloading the latest release](https://github.com/stephenfournier/Dota-2-Building-Helper/releases), you can either get the samplerts addon to see the features ingame, or if you have a preexisting addon which you'd like to utilize BuildignHelper, I'll explain the necessary files and configuration for it.
 
-**Add these files to your own addon:**
-* `game/dota_addons/samplerts/scripts/vscripts/buildinghelper.lua`
-* `game/dota_addons/samplerts/scripts/vscripts/FlashUtil.lua`
-* `game/dota_addons/samplerts/scripts/vscripts/timers.lua`
-* `game/dota_addons/samplerts/scripts/vscripts/abilities.lua`
-* `game/dota_addons/samplerts/resource/flash3/FlashUtil.swf`
-* `game/dota_addons/samplerts/resource/flash3/CustomError.swf`
-* `game/dota_addons/samplerts/resource/flash3/BuildingHelper.swf`
-* `game/dota_addons/samplerts/particles/buildinghelper`
-* `content/dota_addons/samplerts/particles/buildinghelper`
+### SampleRTS sandbox addon
 
-**Merge these files with your own addon:**
-* `game/dota_addons/samplerts/scripts/custom_events.txt`
-* `game/dota_addons/samplerts/resource/flash3/custom_ui.txt`
+1. Copy the entire **content** and **game** folders in your dota folder (`\Steam\SteamApps\common\dota 2 beta\`).
+2. Start the workshop tools, you'll see a **samplerts** in your list of addons.
+3. Launch the samplerts map, either through Hammer or copying `dota_launch_custom_game samplerts samplerts` in your console.
 
-In `game/dota_addons/samplerts/scripts/npc/npc_abilities_custom.txt`, all of abilities between `START OF BUILDING HELPER ABILITIES` and `END OF BUILDING HELPER ABILITIES` are necessary.
+### Adding BuildingHelper scripts to your game mode
 
-In `game/dota_addons/samplerts/scripts/npc/npc_units_custom.txt`, the `npc_bh_dummy` unit is needed.
+There are multiple elements you'll need to incorporate for a successfull implementation of this library. 
 
-**Add these contents to addon_game_mode.lua:**
-```
-require('timers')
-require('physics')
-require('FlashUtil')
-require('buildinghelper')
-require('abilities')
-PrecacheResource("particle_folder", "particles/buildinghelper", context)
-```
-BH requires some snippets of code in game event functions. See [SampleRTS.lua](https://github.com/Myll/Dota-2-Building-Helper/blob/master/game/dota_addons/samplerts/scripts/vscripts/samplerts.lua) and CTRL+F "BH Snippet".
+1. Panorama Content.
+  - Merge the Panorama folder `content\dota_addons\samplerts\panorama` with the panorama folder in your addon.
+  - If you already have a <custom_ui_manifest.xml>, you'll have to add these lines to it:
+  ```
+   <CustomUIElement type="Hud" 	layoutfile="file://{resources}/layout/custom_game/scripts.xml" />
+   <CustomUIElement type="Hud"  layoutfile="file://{resources}/layout/custom_game/resource.xml" />
+   <CustomUIElement type="Hud"  layoutfile="file://{resources}/layout/custom_game/notifications.xml" />
+  ```
 
-See [addon_game_mode.lua](https://github.com/Myll/Dota-2-Building-Helper/blob/master/game/dota_addons/samplerts/scripts/vscripts/addon_game_mode.lua) for reference. It uses a function to require files which I recommend for your addon.
+2. Lua Scripts
+  - Go inside the `\game\dota_addons\samplerts\scripts\vscripts` folder and copy all the files excluding:
+    - addon_game_mode.lua (**Require** all files and precache lines)
+    - gamemode.lua (This contains necessary events and table initializations)
+
+3. DataDriven ability examples.
+  - BH abilities come already split to conveniently combine with [Dota-2-ModKit](https://github.com/stephenfournier/Dota-2-ModKit). In `game\dota_addons\samplerts\scripts\npc` folder there are both essential abilities and ability examples. 
+  - Copy the sub folders **abilities**, **items**. 
+  - The other 2 folders (heroes and units) aren't necessary but contain important keys which will be explained later
+  
+4. Particles
+  - Copy the buildinghelper compiled particles (vpcf_c) from `game\dota_addons\samplerts\particles` into your addons game particle folder. You can also get the sources at the same directory under content.
+ 
 
 ## Usage
 
