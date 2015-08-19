@@ -1,6 +1,30 @@
 # Dota 2 Building Helper - Reborn
 
+After various iterations, the dream of client-side particles is real, and Building Helper has now been fully updated for Panorama, allowing for building ghost and grid effects aswell as providing all the core features you'd expect for building and builder management.
+
 ## Contents
+
+#### Core BH Features
+
+* Building placement with a building grid preview on the world
+* Queueing multiple buildings for individual workers
+* Basic Support for an additional resource (Lumber)
+* Building cancel process, continuing the queue
+* Various construction behaviours: Self-Building, Builder-Inside, Repair-Required, Consumes-Builder.
+* Repairing buildings, with multiple builders being able to assist the process
+* Support for left/right click mouse callbacks and orders
+
+#### Tech Tree Upgrades, Building Queue system, and more!
+
+In addition to the construction related features, you'll find a couple of systems to do very common things in RTS & TD games, which is unlocking different upgrades/researches and automatically enable them when the requirements are met. 
+
+Whenever a building starts channeling an ability with certain research time, a queue will be created using the item slots of the building, without any extra UI, and just requires that every ability also gets an item copy to be able to cancel at will any point of the queue.
+
+**Note:** The following 2 systems were excluded from the basic library:
+- Unit Production
+- Gather Gold/Lumber
+
+If you are interested in said features, you can take a look at the [DotaCraft repository](https://github.com/MNoya/DotaCraft)
 
 ## Installation
 
@@ -8,7 +32,7 @@ There are 2 ways to use this library, starting by [downloading the latest releas
 
 ### SampleRTS sandbox addon
 
-1. Copy the entire **content** and **game** folders in your dota folder (`\Steam\SteamApps\common\dota 2 beta\`).
+1. Copy the entire **content** and **game** folders in your dota folder `\Steam\SteamApps\common\dota 2 beta\`.
 2. Start the workshop tools, you'll see a **samplerts** in your list of addons.
 3. Launch the samplerts map, either through Hammer or copying `dota_launch_custom_game samplerts samplerts` in your console.
 
@@ -39,126 +63,43 @@ There are multiple elements you'll need to incorporate for a successfull impleme
   - Copy the buildinghelper compiled particles (vpcf_c) from `game\dota_addons\samplerts\particles` into your addons game particle folder. You can also get the sources at the same directory under content.
  
 
-## Usage
+## [Usage](https://github.com/stephenfournier/Dota-2-Building-Helper/wiki)
 
-Somewhere at the start of your addon you would call `BuildingHelper:Init(nHalfMapLength)`. In SampleRTS, it's called [here](https://github.com/Myll/Dota-2-Building-Helper/blob/myll/game/dota_addons/samplerts/scripts/vscripts/samplerts.lua#L624). The parameter nHalfMapLength is optional, but recommended, as it decreases the memory usage of BH. This picture explains how to get nHalfMapLength:
+### Grid and Model Ghost options
 
-![](http://i.imgur.com/FpbxQAs.png)
+In buildinghelper.lua, you will find these variables to control the properties of the ghost particles.
 
-For maps using the tile editor, nHalfMapLength=8192 is good.
-
-Using BH is really easy compared to previous versions. The new BH is very KV-oriented. For example, the following ability would be parsed as a BH building:
-```
-"build_arrow_tower"
-{
-	"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
-	"BaseClass"						"ability_datadriven"
-	"AbilityTextureName"			"build_arrow_tower"
-	"AbilityCastAnimation"			"ACT_DOTA_DISABLED"
-	// BuildingHelper info
-	"Building"						"1" //bool
-	"BuildingSize"					"3" // this is (3x64) by (3x64) units, so 9 squares.
-	"BuildTime"						"2.0"
-	"AbilityCastRange"				"100"
-	"UpdateHealth"					"1" //bool
-	"Scale"							"1" //bool
-	"MaxScale"						"1.3"
-	"PlayerCanControl"				"1" //bool. Should the player issuing this build command be able to control the building once built?
-	//"CancelsBuildingGhost"			"0" //bool
-	// Note: if unit uses a npc_dota_hero baseclass, you must use the npc_dota_hero name.
-	"UnitName"						"npc_dota_hero_drow_ranger"
-	"AbilityCooldown"				"0"
-	"AbilityGoldCost"				"10"
-	// End of BuildingHelper info
-
-	"AbilityCastPoint"				"0.0"
-	"MaxLevel"						"1"
-
-	// Item Info
-	//-------------------------------------------------------------------------------------------------------------
-	"AbilityManaCost"				"0"
-	
-	"OnSpellStart"
-	{
-		"RunScript"
-		{
-			"ScriptFile"			"scripts/vscripts/abilities.lua"
-			"Function"				"build"
-		}
-	}
-}
-```
-BH handles cooldowns and gold costs nicely for you. It won't charge the player the cost until he successfully places the building, nor start the cooldown either.
-
-Regarding the `move_to_point_` abilities: You can see we have `AbilityCastRange` defined but the `AbilityBehavior` is `"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"`. To the game logic, `AbilityCastRange` does nothing, but BH takes this value and will try to find an associated `move_to_point_` ability. So if you have a building ability with `"AbilityCastRange"  "122"`, you must have a `move_to_point_122` ability or else BH will default it to `move_to_point_100`. These abilities are necessary for the building caster to walk a distance before being able to build the building.
-
-One more important thing: By default, BH will cancel a building ghost if it detects the caster used another ability during the ghost. To make BH ignore abilities (i.e. not cancel the ghost) you can add the KV `"CancelsBuildingGhost"	"0"` to any ability or item. In this repo, the [example_ability](https://github.com/Myll/Dota-2-Building-Helper/blob/master/game/dota_addons/samplerts/scripts/npc/npc_abilities_custom.txt#L89-L264) has this KV and thus will not cancel building ghost when it's executed.
-
-Now onto the lua component of the front-end: In abilities.lua, we have the build function defined. It'll look simply like this:
-```
-function build( keys )
-	BuildingHelper:AddBuilding(keys)
-	keys:OnConstructionStarted(function(unit)
-		print("Started construction of " .. unit:GetUnitName())
-		-- Unit is the building be built.
-		-- Play construction sound
-		-- FindClearSpace for the builder
-	end)
-	keys:OnConstructionCompleted(function(unit)
-		print("Completed construction of " .. unit:GetUnitName())
-		-- Play construction complete sound.
-		-- Give building its abilities
-	end)
-	-- Have a fire effect when the building goes below 50% health.
-	-- It will turn off if building goes above 50% health again.
-	keys:EnableFireEffect("modifier_jakiro_liquid_fire_burn")
-end
-```
-This really highlights BH's new simplicity and customizability, and is pretty self explanatory. BH handles the complicated stuff in the background, and gives you an easy to use front end interface. You can see all the callbacks BH provides you with in the [build function](https://github.com/Myll/Dota-2-Building-Helper/blob/master/game/dota_addons/samplerts/scripts/vscripts/abilities.lua#L1-L32).
-
-#### Grid and Model Ghost options
-
-In buildinghelper.lua, you will find these 4 variables to control the properties of the ghost particles.
-
-* GRID_ALPHA: Transparency of the green/red grid.
-* MODEL_ALPHA: Transparency of the ghost model
-* RECOLOR_GHOST_MODEL: Choose between displaying the original colors of the building model, or green/red:
+* GRID_ALPHA: Defines the transparency of the ghost squares in Panorama
+* MODEL_ALPHA: Defines the transparency of both the ghost model in Panorama and Building Placed in Lua
+* RECOLOR_GHOST_MODEL: Whether to recolor the ghost model green/red or not
+* RECOLOR_BUILDING_PLACED: Whether to recolor the queue of buildings placed in Lua
   
-![img](http://puu.sh/g8p9y/ff0863ad95.jpg)
+## Help, Bug Reports and Feature Requests
 
-The grid will still turn red, with or without recoloring the ghost model:
+We can be reached through various ways:
 
-![img](http://puu.sh/g8pXj/b26f519783.jpg)
-
-* USE_PROJECTED_GRID: If you are using less than 100 on MODEL_ALPHA, enable this for the grid to be projected under the building:
-  
-![img](http://puu.sh/g8oea/8a50dd1418.jpg)
-
-If you need help I can be reached on irc.gamesurge.net #dota2modhelpdesk or you can [create an issue](https://github.com/Myll/Dota-2-Building-Helper/issues/new).
-
-[**Known issues**](https://github.com/Myll/Dota-2-Building-Helper/issues)
+** [Create an issue on GitHub](https://github.com/Myll/Dota-2-Building-Helper/issues/new)
+** At irc.gamesurge.net [#dota2mods & #dota2modhelpdesk](https://kiwiirc.com/client/irc.gamesurge.net/?#dota2mods,#dota2modhelpdesk)
+** At [moddota.com](https://moddota.com/forums/), throught the dedicated [Tools subforum](https://moddota.com/forums/categories/tools)
 
 ## Contributing
 
-Contributing to this repo is absolutely welcomed. Building Helper's goal is to make Dota 2 a more compatible platform to create RTS-style and Tower Defense mods. It will take a community effort to achieve this goal, not just me.
+Contributing to this repo is absolutely welcomed. Building Helper's goal is to make Dota 2 a more compatible platform to create RTS-style and Tower Defense mods. It will take a community effort to achieve this goal.
+
+If you implement any fix or feature you'd like to see it included in this library, make a pull request or make an issue with the necessary script changes.
 
 ## Credits
 
-[Perry](https://github.com/perryvw): FlashUtil, which contains functions for cursor tracking. Also helped with making the building unit model into a particle.
-
-[BMD](https://github.com/bmddota): Helped figure out how to get mouse clicks in Flash. Made the particles in BH.
-
-[zedor](https://github.com/zedor/CustomError): Custom error in Flash.
-
-[Noya](https://github.com/MNoya): Testing, ideas, building queue (soon to come)
+* [Myll](https://github.com/stephenfournier), original dev
+* [BMD](https://github.com/bmddota), helped figure out how to get mouse clicks in Flash. Made the particles in BH.
+* [Perry](https://github.com/perryvw), contributed to the old scaleform version
+* [zed](https://github.com/zedor), contributed with old scaleform
+* [snipplets](https://github.com/snipplets/), first panorama implementation and queue system
+* [Noya](https://github.com/MNoya), new release, updates and maintenance
 
 ## Notes
 
-If you're a new modder I highly recommend forking a new starter addon using my [D2ModKit](https://github.com/Myll/Dota-2-ModKit) program.
-
-Want to donate to me? That's really nice of you. Here you go:
-
-[![alt text](http://indigoprogram.org/wp-content/uploads/2012/01/Paypal-Donate-Button.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=stephenf%2ebme%40gmail%2ecom&lc=US&item_name=Myll%27s%20Dota%202%20Modding%20Contributions&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
+If you're a new modder we highly recommend forking a new starter addon using [D2ModKit](https://github.com/Myll/Dota-2-ModKit) program.
 
 ## License
 
