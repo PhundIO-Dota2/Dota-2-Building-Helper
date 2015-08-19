@@ -78,9 +78,9 @@ In buildinghelper.lua, you will find these variables to control the properties o
 
 We can be reached through various ways:
 
-** [Create an issue on GitHub](https://github.com/Myll/Dota-2-Building-Helper/issues/new)
-** At irc.gamesurge.net [#dota2mods & #dota2modhelpdesk](https://kiwiirc.com/client/irc.gamesurge.net/?#dota2mods,#dota2modhelpdesk)
-** At [moddota.com](https://moddota.com/forums/), throught the dedicated [Tools subforum](https://moddota.com/forums/categories/tools)
+*[Create an issue on GitHub](https://github.com/Myll/Dota-2-Building-Helper/issues/new)
+* At irc.gamesurge.net [#dota2mods & #dota2modhelpdesk](https://kiwiirc.com/client/irc.gamesurge.net/?#dota2mods,#dota2modhelpdesk)
+* At [moddota.com](https://moddota.com/forums/), throught the dedicated [Tools subforum](https://moddota.com/forums/categories/tools)
 
 ## Contributing
 
