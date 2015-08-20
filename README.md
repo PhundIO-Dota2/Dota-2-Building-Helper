@@ -30,13 +30,13 @@ If you are interested in said features, you can take a look at the [DotaCraft re
 
 There are two ways to use this library. After [downloading the latest release](https://github.com/stephenfournier/Dota-2-Building-Helper/releases), you can either get the `samplerts` addon to see the features ingame, or if you have a pre-existing addon which you'd like to utilize Building Helper. I'll explain the necessary files and configuration for it.
 
-### SampleRTS sandbox addon
+### SampleRTS Sandbox Addon
 
 1. Copy the entire `content` and `game` folders in your dota folder `\Steam\SteamApps\common\dota 2 beta\`.
 2. Start the workshop tools, you'll see `samplerts` in your list of addons.
 3. Launch the `samplerts` map, either through Hammer or copying and pasting `dota_launch_custom_game samplerts samplerts` into your console.
 
-### Adding Building Helper scripts to your game mode
+### Adding Building Helper Scripts to Your Game Mode
 
 There are multiple elements you'll need to incorporate for a successful implementation of this library: 
 
@@ -55,7 +55,7 @@ There are multiple elements you'll need to incorporate for a successful implemen
     - `gamemode.lua` (This contains necessary events and table initializations)
     - Change all the ocurrences of `CustomGameMode` to your own addon game mode class (orders.lua and the listeners/handlers copied from gamemode.lua)
 
-3. DataDriven ability examples.
+3. DataDriven Ability Examples.
   - BH abilities are already split to conveniently combine with [Dota-2-ModKit](https://github.com/stephenfournier/Dota-2-ModKit). There are both essential abilities and ability examples in `game\dota_addons\samplerts\scripts\npc`. 
   - Copy the sub folders `abilities`, `items`. 
   - The other two folders (`heroes` and `units`) aren't necessary but contain important keys which will be explained later
@@ -66,7 +66,7 @@ There are multiple elements you'll need to incorporate for a successful implemen
 
 ## [Usage](https://github.com/stephenfournier/Dota-2-Building-Helper/wiki)
 
-### Grid and Model Ghost options
+### Grid and Model Ghost Options
 
 In `buildinghelper.lua`, you will find these variables to control the properties of the ghost particles.
 
