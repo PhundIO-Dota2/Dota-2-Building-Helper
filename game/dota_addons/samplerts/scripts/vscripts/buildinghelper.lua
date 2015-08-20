@@ -399,7 +399,13 @@ function BuildingHelper:StartBuilding( keys )
     building.buildingTable = buildingTable
     building.state = "building"
 
-    Timers:CreateTimer(function() building:SetAbsOrigin(location) end)
+    Timers:CreateTimer(
+        function() 
+            building:SetAbsOrigin(location)
+            
+            -- Remove ghost model
+            UTIL_Remove(buildingTable.mgd)
+        end)
 
     -- Adjust the Model Orientation
     local yaw = buildingTable:GetVal("ModelRotation", "float")
