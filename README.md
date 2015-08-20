@@ -53,6 +53,7 @@ There are multiple elements you'll need to incorporate for a successfull impleme
   - Go inside the `\game\dota_addons\samplerts\scripts\vscripts` folder and copy all the files excluding:
     - addon_game_mode.lua (**Require** all files and precache lines)
     - gamemode.lua (This contains necessary events and table initializations)
+    - Change all the ocurrences of CustomGameMode to your own addon game mode class (orders.lua and the listeners/handlers copied from gamemode.lua)
 
 3. DataDriven ability examples.
   - BH abilities come already split to conveniently combine with [Dota-2-ModKit](https://github.com/stephenfournier/Dota-2-ModKit). In `game\dota_addons\samplerts\scripts\npc` folder there are both essential abilities and ability examples. 
