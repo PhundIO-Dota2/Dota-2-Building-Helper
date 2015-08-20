@@ -42,7 +42,7 @@ There are multiple elements you'll need to incorporate for a successfull impleme
 
 1. Panorama Content.
   - Merge the Panorama folder `content\dota_addons\samplerts\panorama` with the panorama folder in your addon.
-  - If you already have a <custom_ui_manifest.xml>, you'll have to add these lines to it:
+  - If you already have a `<custom_ui_manifest.xml>`, you'll have to add these lines to it:
   ```
    <CustomUIElement type="Hud" 	layoutfile="file://{resources}/layout/custom_game/scripts.xml" />
    <CustomUIElement type="Hud"  layoutfile="file://{resources}/layout/custom_game/resource.xml" />
