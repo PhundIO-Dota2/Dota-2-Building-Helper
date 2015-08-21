@@ -457,9 +457,12 @@ function Repair( event )
 		ToggleOff(ability)
 
 		print("Repair End")
-		print("Start HP/Gold/Lumber/Time: ", building.health_deficit, gold_cost, lumber_cost, build_time)
-		print("Final HP/Gold/Lumber/Time: ", building:GetHealth(), building.gold_used, math.floor(building.lumber_used), GameRules:GetGameTime() - building.time_started)
-		building.health_deficit = nil
+		-- If tracking information was initialised
+		if building.health_deficit then
+		   print("Start HP/Gold/Lumber/Time: ", building.health_deficit, gold_cost, lumber_cost, build_time)
+		   print("Final HP/Gold/Lumber/Time: ", building:GetHealth(), building.gold_used, math.floor(building.lumber_used), GameRules:GetGameTime() - building.time_started)
+		   building.health_deficit = nil
+		end
 	end
 
 	-- Construction Ended
