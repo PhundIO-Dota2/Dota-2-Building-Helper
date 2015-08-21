@@ -113,9 +113,9 @@ function Build( event )
 
 		-- Store the Build Time, Gold Cost and secondary resource the building 
 	    -- This is necessary for repair to know what was the cost of the building and use resources periodically
-	    unit.GoldCost = build_time
-	    unit.LumberCost = gold_cost
-	    unit.BuildTime = lumber_cost
+	    unit.GoldCost = gold_cost
+	    unit.LumberCost = lumber_cost
+	    unit.BuildTime = build_time
 
 		-- Give item to cancel
 		local item = CreateItem("item_building_cancel", playersHero, playersHero)
