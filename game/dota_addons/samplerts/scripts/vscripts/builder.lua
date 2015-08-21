@@ -113,9 +113,9 @@ function Build( event )
 
 		-- Store the Build Time, Gold Cost and secondary resource the building 
 	    -- This is necessary for repair to know what was the cost of the building and use resources periodically
-	    unit.GoldCost = build_time
-	    unit.LumberCost = gold_cost
-	    unit.BuildTime = lumber_cost
+	    unit.GoldCost = gold_cost
+	    unit.LumberCost = lumber_cost
+	    unit.BuildTime = build_time
 
 		-- Give item to cancel
 		local item = CreateItem("item_building_cancel", playersHero, playersHero)
@@ -457,9 +457,12 @@ function Repair( event )
 		ToggleOff(ability)
 
 		print("Repair End")
-		print("Start HP/Gold/Lumber/Time: ", building.health_deficit, gold_cost, lumber_cost, build_time)
-		print("Final HP/Gold/Lumber/Time: ", building:GetHealth(), building.gold_used, math.floor(building.lumber_used), GameRules:GetGameTime() - building.time_started)
-		building.health_deficit = nil
+		-- If tracking information was initialised
+		if building.health_deficit then
+		   print("Start HP/Gold/Lumber/Time: ", building.health_deficit, gold_cost, lumber_cost, build_time)
+		   print("Final HP/Gold/Lumber/Time: ", building:GetHealth(), building.gold_used, math.floor(building.lumber_used), GameRules:GetGameTime() - building.time_started)
+		   building.health_deficit = nil
+		end
 	end
 
 	-- Construction Ended
