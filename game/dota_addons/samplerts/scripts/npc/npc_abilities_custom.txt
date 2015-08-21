@@ -519,6 +519,9 @@
 	
 		"AbilityMultiOrder"				"1"
 	
+		// Mark this as a BuildingHelper ability to skip CancelQueue when cast
+		"Building"						"1"
+	
 		"precache"
 		{
 			"particle"  "particles/units/heroes/hero_wisp/wisp_overcharge.vpcf"

@@ -155,6 +155,11 @@ function CustomGameMode:OnEntityKilled( event )
 		end
 	end
 
+	-- Cancel queue of a builder when killed
+	if IsBuilder(killedUnit) then
+		BuildingHelper:ClearQueue(killedUnit)
+	end
+
 	-- Table cleanup
 	if player then
 		-- Remake the tables
