@@ -62,6 +62,10 @@ There are multiple elements you'll need to incorporate for a successful implemen
   
 4. Particles
   - Copy the Building Helper compiled particles (`vpcf_c`) from `game\dota_addons\samplerts\particles` into your addon's game particle folder. You can also get the sources in same directory under content.
+
+5. Tech Tree
+  - The requirements for the upgrade system are defined in the `tech_tree.kv` file inside the `game\dota_addons\samplerts\scripts\kv` folder. Copy it into your addon's scripts folder.
+  
  
 
 ## [Usage](https://github.com/stephenfournier/Dota-2-Building-Helper/wiki)
