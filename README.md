@@ -1,141 +1,110 @@
-# Dota 2 Building Helper v2.0
+# Dota 2 Building Helper - Reborn
 
-I'm pleased to announce that BuildingHelper has been completely revamped. It now includes RTS-style building ghost, and the library is overall more customizeable and simpler.
+After various iterations, the dream of client-side particles is real, and Building Helper has now been fully updated for Panorama, allowing for building ghost and grid effects as well as providing all the core features you'd expect for building and builder management.
 
-[Gfy Demo](http://gfycat.com/SpecificSkeletalCowbird)
+## Contents
+
+#### Core BH Features
+
+* Building placement with a building grid preview on the world
+* Queueing multiple buildings for individual workers
+* Basic support for an additional resource (Lumber)
+* Building cancel process, continuing the queue
+* Various construction behaviours: Self-Building, Builder-Inside, Repair-Required, Consumes-Builder.
+* Repairing buildings, with multiple builders being able to assist the process
+* Support for left-/right-click mouse callbacks and orders
+
+#### Tech Tree Upgrades, Building Queue System, and More!
+
+In addition to the construction-related features, you'll find a couple of systems to do very common things in RTS & TD games, which is unlocking different upgrades/researches and automatically enable them when the requirements are met. 
+
+Whenever a building starts channeling an ability with certain research time, a queue will be created using the item slots of the building, without any extra UI, and just requires that every ability also gets an item copy to be able to cancel at will any point of the queue.
+
+**Note:** The following 2 systems were excluded from the basic library:
+- Unit production
+- Gather Gold/Lumber
+
+If you are interested in said features, you can take a look at the [DotaCraft repository](https://github.com/MNoya/DotaCraft)
 
 ## Installation
 
-Since BuildingHelper (BH) now has various components in many different locations, I thought the best way to convey the installation information would be to make this repo contain a sample RTS-style addon. You can literally just merge these game and content folders into your `dota 2 beta/dota_ugc` folder, compile the map in Hammer, and you can see BH in action. I will of course still explain essential installation info in this section.
+There are two ways to use this library. After [downloading the latest release](https://github.com/stephenfournier/Dota-2-Building-Helper/releases), you can either get the `samplerts` addon to see the features ingame, or if you have a pre-existing addon which you'd like to utilize Building Helper. I'll explain the necessary files and configuration for it.
 
-**Add these files to your own addon:**
-* `game/dota_addons/samplerts/scripts/vscripts/buildinghelper.lua`
-* `game/dota_addons/samplerts/scripts/vscripts/FlashUtil.lua`
-* `game/dota_addons/samplerts/scripts/vscripts/abilities.lua`
-* `game/dota_addons/samplerts/resource/flash3/FlashUtil.swf`
-* `game/dota_addons/samplerts/resource/flash3/CustomError.swf`
-* `game/dota_addons/samplerts/resource/flash3/BuildingHelper.swf`
+### SampleRTS Sandbox Addon
 
-**Merge these files with your own addon:**
-* `game/dota_addons/samplerts/scripts/custom_events.txt`
-* `game/dota_addons/samplerts/resource/flash3/custom_ui.txt`
+1. Copy the entire `content` and `game` folders in your dota folder `\Steam\SteamApps\common\dota 2 beta\`.
+2. Start the workshop tools, you'll see `samplerts` in your list of addons.
+3. Launch the `samplerts` map, either through Hammer or copying and pasting `dota_launch_custom_game samplerts samplerts` into your console.
 
-In `game/dota_addons/samplerts/scripts/npc/npc_abilities_custom.txt`, only the abilities that start with `move_to_point_` are required. These abilities are explained more in the "Usage" section.
+### Adding Building Helper Scripts to Your Game Mode
 
-**Add these contents to addon_game_mode.lua:**
-```
-require('util.lua')
-require('timers.lua')
-require('physics.lua')
-require('FlashUtil.lua')
-require('buildinghelper.lua')
-require('abilities.lua')
-PrecacheResource("particle_folder", "particles/buildinghelper", context)
-```
-BH requires some snippets of code in game event functions. See [SampleRTS.lua](https://github.com/Myll/Dota-2-Building-Helper/blob/master/game/dota_addons/samplerts/scripts/vscripts/samplerts.lua) and CTRL+F "BH Snippet".
+There are multiple elements you'll need to incorporate for a successful implementation of this library: 
 
-See [addon_game_mode.lua](https://github.com/Myll/Dota-2-Building-Helper/blob/master/game/dota_addons/samplerts/scripts/vscripts/addon_game_mode.lua) for reference. It uses a function to require files which I recommend for your addon.
+1. Panorama Content.
+  - Merge the Panorama folder `content\dota_addons\samplerts\panorama` with the Panorama folder in your addon.
+  - If you already have a `<custom_ui_manifest.xml>`, you'll have to add these lines to it:
+  ```
+   <CustomUIElement type="Hud" 	layoutfile="file://{resources}/layout/custom_game/scripts.xml" />
+   <CustomUIElement type="Hud"  layoutfile="file://{resources}/layout/custom_game/resource.xml" />
+   <CustomUIElement type="Hud"  layoutfile="file://{resources}/layout/custom_game/notifications.xml" />
+  ```
 
-## Usage
+2. Lua Scripts
+  - Go inside the `\game\dota_addons\samplerts\scripts\vscripts` folder and copy all the files **excluding**:
+    - `addon_game_mode.lua` (**Require** all files and precache lines)
+    - `gamemode.lua` (This contains necessary events and table initializations)
+    - Change all the ocurrences of `CustomGameMode` to your own addon game mode class (orders.lua and the listeners/handlers copied from gamemode.lua)
 
-Somewhere at the start of your addon you would call `BuildingHelper:Init(nHalfMapLength)`. In SampleRTS, it's called [here](https://github.com/Myll/Dota-2-Building-Helper/blob/myll/game/dota_addons/samplerts/scripts/vscripts/samplerts.lua#L624). This picture explains how to get nHalfMapLength:
+3. DataDriven Ability Examples.
+  - BH abilities are already split to conveniently combine with [Dota-2-ModKit](https://github.com/stephenfournier/Dota-2-ModKit). There are both essential abilities and ability examples in `game\dota_addons\samplerts\scripts\npc`. 
+  - Copy the sub folders `abilities`, `items`. 
+  - The other two folders (`heroes` and `units`) aren't necessary but contain important keys which will be explained later
+  
+4. Particles
+  - Copy the Building Helper compiled particles (`vpcf_c`) from `game\dota_addons\samplerts\particles` into your addon's game particle folder. You can also get the sources in same directory under content.
 
-![](http://i.imgur.com/FpbxQAs.png)
+5. Tech Tree
+  - The requirements for the upgrade system are defined in the `tech_tree.kv` file inside the `game\dota_addons\samplerts\scripts\kv` folder. Copy it into your addon's scripts folder.
+  
+ 
 
-For maps using the tile editor, nHalfMapLength=8192 is good.
+## [Usage](https://github.com/stephenfournier/Dota-2-Building-Helper/wiki)
 
-Using BH is really easy compared to previous versions. The new BH is very KV-oriented. For example, the following ability would be parsed as a BH building:
-```
-"build_arrow_tower"
-{
-	"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
-	"BaseClass"						"ability_datadriven"
-	"AbilityTextureName"			"build_arrow_tower"
-	"AbilityCastAnimation"			"ACT_DOTA_DISABLED"
-	// BuildingHelper info
-	"Building"						"1" //bool
-	"BuildingSize"					"3" // this is (3x64) by (3x64) units, so 9 squares.
-	"BuildTime"						"2.0"
-	"AbilityCastRange"				"200"
-	"UpdateHealth"					"1" //bool
-	"Scale"							"1" //bool
-	"MaxScale"						"1.3"
-	"CasterCanControl"				"1" //bool. This will automatically run SetControllableByPlayer and let the caster of this ability to control the building.
-	//"CancelsBuildingGhost"			"0" //bool
-	// Note: if unit uses a npc_dota_hero baseclass, you must use the npc_dota_hero name.
-	"UnitName"						"npc_dota_hero_drow_ranger"
-	"AbilityCooldown"				"3"
-	"AbilityGoldCost"				"10"
-	// End of BuildingHelper info
+### Grid and Model Ghost Options
 
-	"AbilityCastPoint"				"0.0"
-	"MaxLevel"						"1"
+In `buildinghelper.lua`, you will find these variables to control the properties of the ghost particles.
 
-	// Item Info
-	//-------------------------------------------------------------------------------------------------------------
-	"AbilityManaCost"				"0"
-	
-	"OnSpellStart"
-	{
-		"RunScript"
-		{
-			"ScriptFile"			"scripts/vscripts/abilities.lua"
-			"Function"				"build"
-		}
-	}
-}
-```
-BH handles cooldowns and gold costs nicely for you. It won't charge the player the cost until he successfully places the building, nor start the cooldown either.
+* `GRID_ALPHA`: Defines the transparency of the ghost squares in Panorama
+* `MODEL_ALPHA`: Defines the transparency of both the ghost model in Panorama and Building Placed in Lua
+* `RECOLOR_GHOST_MODEL`: Whether to recolor the ghost model green/red or not
+* `RECOLOR_BUILDING_PLACED`: Whether to recolor the queue of buildings placed in Lua
+  
+## Help, Bug Reports and Feature Requests
 
-Regarding the `move_to_point_` abilities: You can see we have `AbilityCastRange` defined but the `AbilityBehavior` is `"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"`. To the game logic, `AbilityCastRange` does nothing, but BH takes this value and will try to find an associated `move_to_point_` ability. So if you have a building ability with `"AbilityCastRange"  "122"`, you must have a `move_to_point_122` ability or else BH will default it to `move_to_point_100`. These abilities are necessary for the building caster to walk a distance before being able to build the building.
+We can be reached through various ways:
 
-One more important thing: By default, BH will cancel a building ghost if it detects the caster used another ability during the ghost. To make BH ignore abilities (i.e. not cancel the ghost) you can add the KV `"CancelsBuildingGhost"	"0"` to any ability or item. In this repo, the [example_ability](https://github.com/Myll/Dota-2-Building-Helper/blob/master/game/dota_addons/samplerts/scripts/npc/npc_abilities_custom.txt#L89-L264) has this KV and thus will not cancel building ghost when it's executed.
-
-Now onto the lua component of the front-end: In abilities.lua, we have the build function defined. It'll look simply like this:
-```
-function build( keys )
-	BuildingHelper:AddBuilding(keys)
-	keys:OnConstructionStarted(function(unit)
-		print("Started construction of " .. unit:GetUnitName())
-		-- Unit is the building be built.
-		-- Play construction sound
-		-- FindClearSpace for the builder
-	end)
-	keys:OnConstructionCompleted(function(unit)
-		print("Completed construction of " .. unit:GetUnitName())
-		-- Play construction complete sound.
-		-- Give building its abilities
-	end)
-	-- Have a fire effect when the building goes below 50% health.
-	-- It will turn off if building goes above 50% health again.
-	keys:EnableFireEffect("modifier_jakiro_liquid_fire_burn")
-end
-```
-This really highlights BH's new simplicity and customizability, and is pretty self explanatory. BH handles the complicated stuff in the background, and gives you an easy to use front end interface. You can see all the callbacks BH provides you with in the [build function](https://github.com/Myll/Dota-2-Building-Helper/blob/master/game/dota_addons/samplerts/scripts/vscripts/abilities.lua#L1-L32).
-
-If you need help I can be reached on irc.gamesurge.net #dota2modhelpdesk or you can [create an issue](https://github.com/Myll/Dota-2-Building-Helper/issues/new).
-
-[**Known issues**](https://github.com/Myll/Dota-2-Building-Helper/issues)
+*[Create an issue on GitHub](https://github.com/Myll/Dota-2-Building-Helper/issues/new)
+* At `irc.gamesurge.net` [#dota2mods & #dota2modhelpdesk](https://kiwiirc.com/client/irc.gamesurge.net/?#dota2mods,#dota2modhelpdesk)
+* At [moddota.com](https://moddota.com/forums/), throught the dedicated [Tools subforum](https://moddota.com/forums/categories/tools)
 
 ## Contributing
 
-Contributing to this repo is absolutely welcomed. Building Helper's goal is to make Dota 2 a more compatible platform to create RTS-style and Tower Defense mods. It will take a community effort to achieve this goal, not just me.
+Contributing to this repo is absolutely welcomed. Building Helper's goal is to make Dota 2 a more compatible platform to create RTS-style and Tower Defense mods. It will take a community effort to achieve this goal.
+
+If you implement any fix or feature you'd like to see it included in this library, make a pull request or make an issue with the necessary script changes.
 
 ## Credits
 
-[Perry](https://github.com/perryvw): FlashUtil, which contains functions for cursor tracking. Also helped with making the building unit model into a particle.
-
-[BMD](https://github.com/bmddota): Helped figure out how to get mouse clicks in Flash. Made the particles in BH.
-
-[zedor](https://github.com/zedor/CustomError): Custom error in Flash.
+* [Myll](https://github.com/stephenfournier), original dev
+* [BMD](https://github.com/bmddota), helped figure out how to get mouse clicks in Flash. Made the particles in BH.
+* [Perry](https://github.com/perryvw), contributed to the old scaleform version
+* [zed](https://github.com/zedor), contributed with old scaleform
+* [snipplets](https://github.com/snipplets/), first panorama implementation and queue system
+* [Noya](https://github.com/MNoya), new release, updates and maintenance
 
 ## Notes
 
-If you're a new modder I highly recommend forking a new starter addon using my [D2ModKit](https://github.com/Myll/Dota-2-ModKit) program.
-
-Want to donate to me? That's really nice of you. Here you go:
-
-[![alt text](http://indigoprogram.org/wp-content/uploads/2012/01/Paypal-Donate-Button.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=stephenf%2ebme%40gmail%2ecom&lc=US&item_name=Myll%27s%20Dota%202%20Modding%20Contributions&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
+If you're a new modder we highly recommend forking a new starter addon using [D2ModKit](https://github.com/Myll/Dota-2-ModKit) program.
 
 ## License
 
