@@ -30,7 +30,7 @@ If you are interested in said features, you can take a look at the [DotaCraft re
 
 ## Installation
 
-There are two ways to use this library. After [downloading the latest release](https://github.com/stephenfournier/Dota-2-Building-Helper/releases), you can either get the `samplerts` addon to see the features ingame, or if you have a pre-existing addon which you'd like to utilize Building Helper. I'll explain the necessary files and configuration for it.
+There are two ways to use this library. After [downloading](https://github.com/stephenfournier/Dota-2-Building-Helper/archive/master.zip), you can either get the `samplerts` addon to see the features ingame, or if you have a pre-existing addon which you'd like to utilize Building Helper. I'll explain the necessary files and configuration for it.
 
 ### SampleRTS Sandbox Addon
 
