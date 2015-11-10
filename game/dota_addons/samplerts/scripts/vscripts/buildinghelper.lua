@@ -151,6 +151,8 @@ function BuildingHelper:AddBuilding(keys)
 
     -- Make a model dummy to pass it to panorama
     player.activeBuildingTable.mgd = CreateUnitByName(unitName, OutOfWorldVector, false, nil, nil, builder:GetTeam())
+    player.activeBuildingTable.mgd:SetDayTimeVisionRange(0)
+    player.activeBuildingTable.mgd:SetNightTimeVisionRange(0)
 
     -- Adjust the Model Orientation
     local yaw = buildingTable:GetVal("ModelRotation", "float")
@@ -938,7 +940,9 @@ function BuildingHelper:AddToQueue( builder, location, bQueued )
 
     -- Create model ghost dummy out of the map, then make pretty particles
     local mgd = CreateUnitByName(building, OutOfWorldVector, false, nil, nil, builder:GetTeam())
-
+    mgd:SetDayTimeVisionRange(0)
+    mgd:SetNightTimeVisionRange(0)
+    
     local modelParticle = ParticleManager:CreateParticleForPlayer("particles/buildinghelper/ghost_model.vpcf", PATTACH_ABSORIGIN, mgd, player)
     ParticleManager:SetParticleControl(modelParticle, 0, location)
     ParticleManager:SetParticleControlEnt(modelParticle, 1, mgd, 1, "follow_origin", mgd:GetAbsOrigin(), true) -- Model attach          
