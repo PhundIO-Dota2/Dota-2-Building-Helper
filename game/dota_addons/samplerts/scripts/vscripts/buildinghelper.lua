@@ -419,14 +419,11 @@ function BuildingHelper:StartBuilding( keys )
     building.blockers = gridNavBlockers
     building.buildingTable = buildingTable
     building.state = "building"
-
-    Timers:CreateTimer(
-        function() 
-            building:SetAbsOrigin(location)
+    building:SetAbsOrigin(location)
             
-            -- Remove ghost model
-            UTIL_Remove(buildingTable.mgd)
-        end)
+    -- Remove ghost model
+    UTIL_Remove(buildingTable.mgd)
+
 
     -- Adjust the Model Orientation
     local yaw = buildingTable:GetVal("ModelRotation", "float")
