@@ -419,10 +419,14 @@ function BuildingHelper:StartBuilding( keys )
     building.blockers = gridNavBlockers
     building.buildingTable = buildingTable
     building.state = "building"
-    building:SetAbsOrigin(location)
-            
-    -- Remove ghost model
-    UTIL_Remove(buildingTable.mgd)
+    
+    Timers:CreateTimer(
+        function() 
+            building:SetAbsOrigin(location)
+            buildingTable.mgd:SetDayTimeVisionRange(0) -- Prevent game from forgetting that this unit should not have vision
+            buildingTable.mgd:SetNightTimeVisionRange(0) -- So user does not get vision where the dummy is off the map.
+            UTIL_Remove(buildingTable.mgd) -- Remove ghost model
+        end)
 
 
     -- Adjust the Model Orientation
