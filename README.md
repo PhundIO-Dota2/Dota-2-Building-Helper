@@ -1,5 +1,7 @@
 # Dota 2 Building Helper - Reborn
 
+For the updated script codebase, head over https://github.com/MNoya/BuildingHelper
+
 [简体中文版说明](https://github.com/stephenfournier/Dota-2-Building-Helper/blob/master/README_Schinese.md)
 
 After various iterations, the dream of client-side particles is real, and Building Helper has now been fully updated for Panorama, allowing for building ghost and grid effects as well as providing all the core features you'd expect for building and builder management.
